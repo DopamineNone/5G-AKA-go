@@ -1,4 +1,4 @@
-package _5gAKA_go
+package milenage
 
 import (
 	"crypto/aes"

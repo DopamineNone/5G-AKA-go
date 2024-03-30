@@ -1,4 +1,4 @@
-package main
+package UE
 
 import (
 	"_5gAKA_go"
@@ -146,7 +146,7 @@ func InitForUE() (string, string, string, string) {
 	return ki, op, snName, sqnMax
 }
 
-func main() {
+func utils() {
 	fmt.Println("UE")
 	ki, op, snName, _ := InitForUE()
 	opc := _5gAKA_go.MilenageGenOpc(ki, op)

@@ -1,4 +1,4 @@
-package main
+package SEAF
 
 import (
 	"crypto/sha256"
