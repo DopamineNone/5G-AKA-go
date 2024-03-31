@@ -168,8 +168,8 @@ func handleConnection(conn net.Conn) {
 	}
 }
 
-func main() {
+func utils() {
 	//	监听SEAF对应端口，根据监听到的消息长度做出不同反应
-	fmt.Println("SEAF:")
+
 	ReceiveData(portSEAF)
 }
