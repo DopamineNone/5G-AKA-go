@@ -3,7 +3,7 @@
 package protocolservice
 
 import (
-	base "_5gAKA_go/kitex_gen/_5gAKA_go/base"
+	udm "_5gAKA_go/kitex_gen/_5gAKA_go/UDM"
 	"context"
 	client "github.com/cloudwego/kitex/client"
 	kitex "github.com/cloudwego/kitex/pkg/serviceinfo"
@@ -17,13 +17,13 @@ var protocolServiceServiceInfo = NewServiceInfo()
 
 func NewServiceInfo() *kitex.ServiceInfo {
 	serviceName := "ProtocolService"
-	handlerType := (*base.ProtocolService)(nil)
+	handlerType := (*udm.ProtocolService)(nil)
 	methods := map[string]kitex.MethodInfo{
 		"Authenticate": kitex.NewMethodInfo(authenticateHandler, newProtocolServiceAuthenticateArgs, newProtocolServiceAuthenticateResult, false),
 	}
 	extra := map[string]interface{}{
-		"PackageName":     "base",
-		"ServiceFilePath": `idl\base.thrift`,
+		"PackageName":     "udm",
+		"ServiceFilePath": `idl\UDM.thrift`,
 	}
 	svcInfo := &kitex.ServiceInfo{
 		ServiceName:     serviceName,
@@ -37,9 +37,9 @@ func NewServiceInfo() *kitex.ServiceInfo {
 }
 
 func authenticateHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	realArg := arg.(*base.ProtocolServiceAuthenticateArgs)
-	realResult := result.(*base.ProtocolServiceAuthenticateResult)
-	success, err := handler.(base.ProtocolService).Authenticate(ctx, realArg.Data)
+	realArg := arg.(*udm.ProtocolServiceAuthenticateArgs)
+	realResult := result.(*udm.ProtocolServiceAuthenticateResult)
+	success, err := handler.(udm.ProtocolService).Authenticate(ctx, realArg.Data)
 	if err != nil {
 		return err
 	}
@@ -47,11 +47,11 @@ func authenticateHandler(ctx context.Context, handler interface{}, arg, result i
 	return nil
 }
 func newProtocolServiceAuthenticateArgs() interface{} {
-	return base.NewProtocolServiceAuthenticateArgs()
+	return udm.NewProtocolServiceAuthenticateArgs()
 }
 
 func newProtocolServiceAuthenticateResult() interface{} {
-	return base.NewProtocolServiceAuthenticateResult()
+	return udm.NewProtocolServiceAuthenticateResult()
 }
 
 type kClient struct {
@@ -65,9 +65,9 @@ func newServiceClient(c client.Client) *kClient {
 }
 
 func (p *kClient) Authenticate(ctx context.Context, data string) (r string, err error) {
-	var _args base.ProtocolServiceAuthenticateArgs
+	var _args udm.ProtocolServiceAuthenticateArgs
 	_args.Data = data
-	var _result base.ProtocolServiceAuthenticateResult
+	var _result udm.ProtocolServiceAuthenticateResult
 	if err = p.c.Call(ctx, "Authenticate", &_args, &_result); err != nil {
 		return
 	}

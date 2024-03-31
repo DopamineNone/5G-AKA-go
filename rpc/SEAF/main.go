@@ -1,12 +1,12 @@
 package main
 
 import (
-	base "_5gAKA_go/kitex_gen/_5gAKA_go/base/protocolservice"
+	seaf "_5gAKA_go/kitex_gen/_5gAKA_go/SEAF/protocolservice"
 	"log"
 )
 
 func main() {
-	svr := base.NewServer(new(ProtocolServiceImpl))
+	svr := seaf.NewServer(new(ProtocolServiceImpl))
 
 	err := svr.Run()
 

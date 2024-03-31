@@ -1,3 +1,5 @@
 namespace go _5gAKA_go.AUSF
 
-include "base.thrift"
+service ProtocolService {
+    string Authenticate(1: string data)
+}

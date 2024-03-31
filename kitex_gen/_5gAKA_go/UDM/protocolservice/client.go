@@ -10,7 +10,7 @@ import (
 
 // Client is designed to provide IDL-compatible methods with call-option parameter for kitex framework.
 type Client interface {
-	Authenticate(ctx context.Context, callOptions ...callopt.Option) (r string, err error)
+	Authenticate(ctx context.Context, data string, callOptions ...callopt.Option) (r string, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -42,7 +42,7 @@ type kProtocolServiceClient struct {
 	*kClient
 }
 
-func (p *kProtocolServiceClient) Authenticate(ctx context.Context, callOptions ...callopt.Option) (r string, err error) {
+func (p *kProtocolServiceClient) Authenticate(ctx context.Context, data string, callOptions ...callopt.Option) (r string, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.Authenticate(ctx)
+	return p.kClient.Authenticate(ctx, data)
 }

@@ -6,10 +6,11 @@ import (
 	"context"
 	"fmt"
 	"github.com/apache/thrift/lib/go/thrift"
+	"strings"
 )
 
 type ProtocolService interface {
-	Authenticate(ctx context.Context) (err error)
+	Authenticate(ctx context.Context) (r string, err error)
 }
 
 type ProtocolServiceClient struct {
@@ -38,13 +39,13 @@ func (p *ProtocolServiceClient) Client_() thrift.TClient {
 	return p.c
 }
 
-func (p *ProtocolServiceClient) Authenticate(ctx context.Context) (err error) {
+func (p *ProtocolServiceClient) Authenticate(ctx context.Context) (r string, err error) {
 	var _args ProtocolServiceAuthenticateArgs
 	var _result ProtocolServiceAuthenticateResult
 	if err = p.Client_().Call(ctx, "Authenticate", &_args, &_result); err != nil {
 		return
 	}
-	return nil
+	return _result.GetSuccess(), nil
 }
 
 type ProtocolServiceProcessor struct {
@@ -107,13 +108,16 @@ func (p *protocolServiceProcessorAuthenticate) Process(ctx context.Context, seqI
 	iprot.ReadMessageEnd()
 	var err2 error
 	result := ProtocolServiceAuthenticateResult{}
-	if err2 = p.handler.Authenticate(ctx); err2 != nil {
+	var retval string
+	if retval, err2 = p.handler.Authenticate(ctx); err2 != nil {
 		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing Authenticate: "+err2.Error())
 		oprot.WriteMessageBegin("Authenticate", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
 		oprot.WriteMessageEnd()
 		oprot.Flush(ctx)
 		return true, err2
+	} else {
+		result.Success = &retval
 	}
 	if err2 = oprot.WriteMessageBegin("Authenticate", thrift.REPLY, seqId); err2 != nil {
 		err = err2
@@ -227,6 +231,7 @@ func (p *ProtocolServiceAuthenticateArgs) DeepEqual(ano *ProtocolServiceAuthenti
 }
 
 type ProtocolServiceAuthenticateResult struct {
+	Success *string `thrift:"success,0,optional" frugal:"0,optional,string" json:"success,omitempty"`
 }
 
 func NewProtocolServiceAuthenticateResult() *ProtocolServiceAuthenticateResult {
@@ -237,7 +242,25 @@ func (p *ProtocolServiceAuthenticateResult) InitDefault() {
 	*p = ProtocolServiceAuthenticateResult{}
 }
 
-var fieldIDToName_ProtocolServiceAuthenticateResult = map[int16]string{}
+var ProtocolServiceAuthenticateResult_Success_DEFAULT string
+
+func (p *ProtocolServiceAuthenticateResult) GetSuccess() (v string) {
+	if !p.IsSetSuccess() {
+		return ProtocolServiceAuthenticateResult_Success_DEFAULT
+	}
+	return *p.Success
+}
+func (p *ProtocolServiceAuthenticateResult) SetSuccess(x interface{}) {
+	p.Success = x.(*string)
+}
+
+var fieldIDToName_ProtocolServiceAuthenticateResult = map[int16]string{
+	0: "success",
+}
+
+func (p *ProtocolServiceAuthenticateResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
 
 func (p *ProtocolServiceAuthenticateResult) Read(iprot thrift.TProtocol) (err error) {
 
@@ -256,8 +279,20 @@ func (p *ProtocolServiceAuthenticateResult) Read(iprot thrift.TProtocol) (err er
 		if fieldTypeId == thrift.STOP {
 			break
 		}
-		if err = iprot.Skip(fieldTypeId); err != nil {
-			goto SkipFieldTypeError
+
+		switch fieldId {
+		case 0:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField0(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		default:
+			if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
 		}
 		if err = iprot.ReadFieldEnd(); err != nil {
 			goto ReadFieldEndError
@@ -272,8 +307,10 @@ ReadStructBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
-SkipFieldTypeError:
-	return thrift.PrependError(fmt.Sprintf("%T skip field type %d error", p, fieldTypeId), err)
+ReadFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_ProtocolServiceAuthenticateResult[fieldId]), err)
+SkipFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
 ReadFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
@@ -281,11 +318,26 @@ ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
 
+func (p *ProtocolServiceAuthenticateResult) ReadField0(iprot thrift.TProtocol) error {
+
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		p.Success = &v
+	}
+	return nil
+}
+
 func (p *ProtocolServiceAuthenticateResult) Write(oprot thrift.TProtocol) (err error) {
+	var fieldId int16
 	if err = oprot.WriteStructBegin("Authenticate_result"); err != nil {
 		goto WriteStructBeginError
 	}
 	if p != nil {
+		if err = p.writeField0(oprot); err != nil {
+			fieldId = 0
+			goto WriteFieldError
+		}
 	}
 	if err = oprot.WriteFieldStop(); err != nil {
 		goto WriteFieldStopError
@@ -296,10 +348,31 @@ func (p *ProtocolServiceAuthenticateResult) Write(oprot thrift.TProtocol) (err e
 	return nil
 WriteStructBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+WriteFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T write field %d error: ", p, fieldId), err)
 WriteFieldStopError:
 	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
 WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
+}
+
+func (p *ProtocolServiceAuthenticateResult) writeField0(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err = oprot.WriteFieldBegin("success", thrift.STRING, 0); err != nil {
+			goto WriteFieldBeginError
+		}
+		if err := oprot.WriteString(*p.Success); err != nil {
+			return err
+		}
+		if err = oprot.WriteFieldEnd(); err != nil {
+			goto WriteFieldEndError
+		}
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 0 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 0 end error: ", p), err)
 }
 
 func (p *ProtocolServiceAuthenticateResult) String() string {
@@ -314,6 +387,22 @@ func (p *ProtocolServiceAuthenticateResult) DeepEqual(ano *ProtocolServiceAuthen
 	if p == ano {
 		return true
 	} else if p == nil || ano == nil {
+		return false
+	}
+	if !p.Field0DeepEqual(ano.Success) {
+		return false
+	}
+	return true
+}
+
+func (p *ProtocolServiceAuthenticateResult) Field0DeepEqual(src *string) bool {
+
+	if p.Success == src {
+		return true
+	} else if p.Success == nil || src == nil {
+		return false
+	}
+	if strings.Compare(*p.Success, *src) != 0 {
 		return false
 	}
 	return true

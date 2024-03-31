@@ -1,12 +1,12 @@
 package main
 
 import (
-	base "_5gAKA_go/kitex_gen/_5gAKA_go/base/protocolservice"
+	ausf "_5gAKA_go/kitex_gen/_5gAKA_go/AUSF/protocolservice"
 	"log"
 )
 
 func main() {
-	svr := base.NewServer(new(ProtocolServiceImpl))
+	svr := ausf.NewServer(new(ProtocolServiceImpl))
 
 	err := svr.Run()
 

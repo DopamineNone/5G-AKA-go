@@ -1,16 +1,12 @@
 package main
 
 import (
-	"_5gAKA_go"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
 	"math/rand"
 	"net"
-	"os"
-	"time"
-
 	//"os"
 	"strconv"
 )
@@ -146,43 +142,43 @@ func InitForUE() (string, string, string, string) {
 	return ki, op, snName, sqnMax
 }
 
-func utils() {
-	fmt.Println("UE")
-	ki, op, snName, _ := InitForUE()
-	opc := _5gAKA_go.MilenageGenOpc(ki, op)
-
-	file, _ := os.Create("UE.log")
-	defer func(file *os.File) {
-		err := file.Close()
-		if err != nil {
-			panic(err)
-		}
-	}(file)
-
-	SUPI := GenerateSUPI()
-	SUCI := GenerateSUCI(SUPI)
-
-	SendData(SUCI+snName, hostSEAF, portSEAF)
-	_, _ = file.WriteString(time.Now().Format("2006-01-02 15:04:05") + "  " + "Send SUCI and SN_name to SEAF.")
-	fmt.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "Send SUCI and SN_name to SEAF")
-
-	authReq := ReceiveAuthReqFromSN(portUE)
-	fmt.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "Receive auth-request from SEAF.")
-	_, _ = file.WriteString(time.Now().Format("2006-01-02 15:04:05") + "  " + "Receive auth-request from SEAF.")
-	randNum, AUTN := authReq[:32], authReq[32:]
-	sqnAK, amf, xMacA := ResolveAUTN(AUTN)
-
-	res, ck, ik, ak := _5gAKA_go.MilenageF2345(ki, opc, randNum)
-
-	xSqn := _5gAKA_go.LogicalXOR(ak, sqnAK)
-	macA, _ := _5gAKA_go.MilenageF1(ki, opc, randNum, xSqn, amf)
-	if CheckMac(xMacA, macA) == 1 {
-		P0 := snName
-		L0 := fmt.Sprintf("%x", len(snName))
-		resStar := GenerateResStar(ck, ik, P0, L0, randNum, res)
-
-		SendData(resStar, hostSEAF, portSEAF)
-		fmt.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "Send res* to SEAF. Value:" + resStar)
-		_, _ = file.WriteString(time.Now().Format("2006-01-02 15:04:05") + "  " + "Send res* to SEAF. Value:" + resStar)
-	}
-}
+//func utils() {
+//	fmt.Println("UE")
+//	ki, op, snName, _ := InitForUE()
+//	opc := _5gAKA_go.MilenageGenOpc(ki, op)
+//
+//	file, _ := os.Create("UE.log")
+//	defer func(file *os.File) {
+//		err := file.Close()
+//		if err != nil {
+//			panic(err)
+//		}
+//	}(file)
+//
+//	SUPI := GenerateSUPI()
+//	SUCI := GenerateSUCI(SUPI)
+//
+//	SendData(SUCI+snName, hostSEAF, portSEAF)
+//	_, _ = file.WriteString(time.Now().Format("2006-01-02 15:04:05") + "  " + "Send SUCI and SN_name to SEAF.")
+//	fmt.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "Send SUCI and SN_name to SEAF")
+//
+//	authReq := ReceiveAuthReqFromSN(portUE)
+//	fmt.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "Receive auth-request from SEAF.")
+//	_, _ = file.WriteString(time.Now().Format("2006-01-02 15:04:05") + "  " + "Receive auth-request from SEAF.")
+//	randNum, AUTN := authReq[:32], authReq[32:]
+//	sqnAK, amf, xMacA := ResolveAUTN(AUTN)
+//
+//	res, ck, ik, ak := _5gAKA_go.MilenageF2345(ki, opc, randNum)
+//
+//	xSqn := _5gAKA_go.LogicalXOR(ak, sqnAK)
+//	macA, _ := _5gAKA_go.MilenageF1(ki, opc, randNum, xSqn, amf)
+//	if CheckMac(xMacA, macA) == 1 {
+//		P0 := snName
+//		L0 := fmt.Sprintf("%x", len(snName))
+//		resStar := GenerateResStar(ck, ik, P0, L0, randNum, res)
+//
+//		SendData(resStar, hostSEAF, portSEAF)
+//		fmt.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "Send res* to SEAF. Value:" + resStar)
+//		_, _ = file.WriteString(time.Now().Format("2006-01-02 15:04:05") + "  " + "Send res* to SEAF. Value:" + resStar)
+//	}
+//}

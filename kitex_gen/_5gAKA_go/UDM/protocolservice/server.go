@@ -2,12 +2,12 @@
 package protocolservice
 
 import (
-	base "_5gAKA_go/kitex_gen/_5gAKA_go/base"
+	udm "_5gAKA_go/kitex_gen/_5gAKA_go/UDM"
 	server "github.com/cloudwego/kitex/server"
 )
 
 // NewServer creates a server.Server with the given handler and options.
-func NewServer(handler base.ProtocolService, opts ...server.Option) server.Server {
+func NewServer(handler udm.ProtocolService, opts ...server.Option) server.Server {
 	var options []server.Option
 
 	options = append(options, opts...)

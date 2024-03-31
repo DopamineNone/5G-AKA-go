@@ -3,7 +3,7 @@
 package protocolservice
 
 import (
-	ue "_5gAKA_go/kitex_gen/_5gAKA_go/UE"
+	seaf "_5gAKA_go/kitex_gen/_5gAKA_go/SEAF"
 	"context"
 	client "github.com/cloudwego/kitex/client"
 	kitex "github.com/cloudwego/kitex/pkg/serviceinfo"
@@ -17,13 +17,13 @@ var protocolServiceServiceInfo = NewServiceInfo()
 
 func NewServiceInfo() *kitex.ServiceInfo {
 	serviceName := "ProtocolService"
-	handlerType := (*ue.ProtocolService)(nil)
+	handlerType := (*seaf.ProtocolService)(nil)
 	methods := map[string]kitex.MethodInfo{
 		"Authenticate": kitex.NewMethodInfo(authenticateHandler, newProtocolServiceAuthenticateArgs, newProtocolServiceAuthenticateResult, false),
 	}
 	extra := map[string]interface{}{
-		"PackageName":     "ue",
-		"ServiceFilePath": `idl\UE.thrift`,
+		"PackageName":     "seaf",
+		"ServiceFilePath": `idl\SEAF.thrift`,
 	}
 	svcInfo := &kitex.ServiceInfo{
 		ServiceName:     serviceName,
@@ -37,9 +37,9 @@ func NewServiceInfo() *kitex.ServiceInfo {
 }
 
 func authenticateHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-
-	realResult := result.(*ue.ProtocolServiceAuthenticateResult)
-	success, err := handler.(ue.ProtocolService).Authenticate(ctx)
+	realArg := arg.(*seaf.ProtocolServiceAuthenticateArgs)
+	realResult := result.(*seaf.ProtocolServiceAuthenticateResult)
+	success, err := handler.(seaf.ProtocolService).Authenticate(ctx, realArg.Data)
 	if err != nil {
 		return err
 	}
@@ -47,11 +47,11 @@ func authenticateHandler(ctx context.Context, handler interface{}, arg, result i
 	return nil
 }
 func newProtocolServiceAuthenticateArgs() interface{} {
-	return ue.NewProtocolServiceAuthenticateArgs()
+	return seaf.NewProtocolServiceAuthenticateArgs()
 }
 
 func newProtocolServiceAuthenticateResult() interface{} {
-	return ue.NewProtocolServiceAuthenticateResult()
+	return seaf.NewProtocolServiceAuthenticateResult()
 }
 
 type kClient struct {
@@ -64,9 +64,10 @@ func newServiceClient(c client.Client) *kClient {
 	}
 }
 
-func (p *kClient) Authenticate(ctx context.Context) (r string, err error) {
-	var _args ue.ProtocolServiceAuthenticateArgs
-	var _result ue.ProtocolServiceAuthenticateResult
+func (p *kClient) Authenticate(ctx context.Context, data string) (r string, err error) {
+	var _args seaf.ProtocolServiceAuthenticateArgs
+	_args.Data = data
+	var _result seaf.ProtocolServiceAuthenticateResult
 	if err = p.c.Call(ctx, "Authenticate", &_args, &_result); err != nil {
 		return
 	}
