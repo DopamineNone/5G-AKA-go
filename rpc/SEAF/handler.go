@@ -4,6 +4,8 @@ import (
 	ausf "_5gAKA_go/kitex_gen/_5gAKA_go/AUSF/protocolservice"
 	"context"
 	"fmt"
+	"github.com/cloudwego/kitex/client"
+	"log"
 	"os"
 	"time"
 )
@@ -18,6 +20,13 @@ type ProtocolServiceImpl struct{}
 
 // Authenticate implements the ProtocolServiceImpl interface.
 func (s *ProtocolServiceImpl) Authenticate(ctx context.Context, data string) (resp string, err error) {
+	ausfClient, err = ausf.NewClient("_5gAKA_go.AUSF", client.WithHostPorts(ausfHost+":"+ausfPort))
+
+	if err != nil {
+		log.Println(err.Error())
+		return "", err
+	}
+
 	// Load log file
 	file, _ := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModePerm)
 	defer func(file *os.File) {

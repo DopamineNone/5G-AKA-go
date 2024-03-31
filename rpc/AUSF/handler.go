@@ -4,6 +4,8 @@ import (
 	udm "_5gAKA_go/kitex_gen/_5gAKA_go/UDM/protocolservice"
 	"context"
 	"fmt"
+	"github.com/cloudwego/kitex/client"
+	"log"
 	"os"
 	"time"
 )
@@ -18,6 +20,12 @@ type ProtocolServiceImpl struct{}
 
 // Authenticate implements the ProtocolServiceImpl interface.
 func (s *ProtocolServiceImpl) Authenticate(ctx context.Context, data string) (resp string, err error) {
+	udmClient, err = udm.NewClient("_5gAKA_go.UDM", client.WithHostPorts(udmHost+":"+udmPort))
+
+	if err != nil {
+		log.Println(err.Error())
+		return "", err
+	}
 	// TODO: Your code here...
 	// 根据消息长度做出不同反应
 	file, _ := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModePerm)

@@ -129,7 +129,7 @@ func InitForUDM() (string, string, string, string, string) {
 	return ki, randNum, sqn, amf, op
 }
 
-func main() {
+func utils() {
 	fmt.Println("UDM:")
 	file, _ := os.Create("UDM.log")
 	defer func(file *os.File) {

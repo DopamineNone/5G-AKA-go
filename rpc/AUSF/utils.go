@@ -187,6 +187,6 @@ func handleConnection(conn net.Conn) {
 	}
 }
 
-func main() {
+func utils() {
 	ReceiveData(portAUSF)
 }
