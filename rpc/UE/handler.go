@@ -34,7 +34,7 @@ func (s *ProtocolServiceImpl) Authenticate(ctx context.Context) (resp string, er
 		}
 	}(file)
 
-	// Send SUCI and SN_Name to SEAF, get response, and update logs
+	// Send SUPI and SN_Name to SEAF, get response, and update logs
 	SUPI := GenerateSUPI()
 	SUCI := GenerateSUCI(SUPI)
 	authReq, err := seafClient.Authenticate(context.Background(), SUCI+snName)
@@ -64,6 +64,7 @@ func (s *ProtocolServiceImpl) Authenticate(ctx context.Context) (resp string, er
 		_, _ = file.WriteString(time.Now().Format("2006-01-02 15:04:05") + "  " + "Send res* to SEAF. Value:" + resStar)
 		if err != nil {
 			fmt.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "Failed to receive reponse from SEAF")
+			_, _ = file.WriteString(time.Now().Format("2006-01-02 15:04:05") + "  " + "Failed to receive reponse from SEAF")
 			return failMsg, err
 		}
 	}
