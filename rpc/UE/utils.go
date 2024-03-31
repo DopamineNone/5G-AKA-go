@@ -1,4 +1,4 @@
-package UE
+package main
 
 import (
 	"_5gAKA_go"

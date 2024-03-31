@@ -1,4 +1,4 @@
-package AUSF
+package main
 
 // AUSF端 接收SEAF转发的来自UE的SUCI + SN_name，并将其发送给UDM
 // 接收UDM发送来的认证向量5G HE_AV，据此存储xRes*并计算hxRes*，计算5G SE_AV并发送给SEAF
