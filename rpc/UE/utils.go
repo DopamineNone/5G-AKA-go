@@ -6,7 +6,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"math/rand"
-	"net"
 	//"os"
 	"strconv"
 )
@@ -43,41 +42,41 @@ func GenerateSUCI(SUPI string) string {
 }
 
 // ReceiveAuthReqFromSN Receive authReq(R, AUTN) from SN.
-func ReceiveAuthReqFromSN(port string) string {
-	listen, err := net.Listen("tcp", "localhost:"+port)
-	if err != nil {
-		panic(err)
-	}
-	defer func(listen net.Listener) {
-		err := listen.Close()
-		if err != nil {
-			fmt.Println("Error while closing connection:", err.Error())
-		}
-	}(listen)
-
-	for {
-		conn, err := listen.Accept()
-		if err != nil {
-			fmt.Println("Error accepting:", err.Error())
-			continue
-		}
-
-		buffer := make([]byte, 1024)
-		n, err := conn.Read(buffer)
-		if err != nil {
-			panic(err)
-		}
-
-		receivedData := string(buffer[:n])
-		//fmt.Println("Received:", receivedData)
-
-		err = conn.Close()
-		if err != nil {
-			panic(err)
-		}
-		return receivedData
-	}
-}
+//func ReceiveAuthReqFromSN(port string) string {
+//	listen, err := net.Listen("tcp", "localhost:"+port)
+//	if err != nil {
+//		panic(err)
+//	}
+//	defer func(listen net.Listener) {
+//		err := listen.Close()
+//		if err != nil {
+//			fmt.Println("Error while closing connection:", err.Error())
+//		}
+//	}(listen)
+//
+//	for {
+//		conn, err := listen.Accept()
+//		if err != nil {
+//			fmt.Println("Error accepting:", err.Error())
+//			continue
+//		}
+//
+//		buffer := make([]byte, 1024)
+//		n, err := conn.Read(buffer)
+//		if err != nil {
+//			panic(err)
+//		}
+//
+//		receivedData := string(buffer[:n])
+//		//fmt.Println("Received:", receivedData)
+//
+//		err = conn.Close()
+//		if err != nil {
+//			panic(err)
+//		}
+//		return receivedData
+//	}
+//}
 
 // ResolveAUTN  Detach AUTN(sqn^AK||amf||mac_a) after receiving authReq(R, AUTN) from SEAF.
 func ResolveAUTN(AUTN string) (string, string, string) {
@@ -112,26 +111,26 @@ func GenerateResStar(ck, ik, P0, L0, rand, res string) string {
 	return resStar
 }
 
-func SendData(data, host, port string) {
-	conn, err := net.Dial("tcp", host+":"+port)
-	if err != nil {
-		fmt.Println("Error connecting:", err.Error())
-		return
-	}
-
-	_, err = conn.Write([]byte(data))
-	if err != nil {
-		fmt.Println("Error sending:", err.Error())
-		return
-	}
-
-	defer func(conn net.Conn) {
-		err := conn.Close()
-		if err != nil {
-			fmt.Println("Error while closing connection:", err.Error())
-		}
-	}(conn)
-}
+//func SendData(data, host, port string) {
+//	conn, err := net.Dial("tcp", host+":"+port)
+//	if err != nil {
+//		fmt.Println("Error connecting:", err.Error())
+//		return
+//	}
+//
+//	_, err = conn.Write([]byte(data))
+//	if err != nil {
+//		fmt.Println("Error sending:", err.Error())
+//		return
+//	}
+//
+//	defer func(conn net.Conn) {
+//		err := conn.Close()
+//		if err != nil {
+//			fmt.Println("Error while closing connection:", err.Error())
+//		}
+//	}(conn)
+//}
 
 func InitForUE() (string, string, string, string) {
 	ki := "000000012449900000000010123456d8"
