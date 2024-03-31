@@ -14,7 +14,7 @@ func main() {
 	}
 	err = cli.Authenticate(context.Background())
 	if err == nil {
-		fmt.Println("Authenticate successfully!")
+		fmt.Println("Authentication complete successfully!")
 	} else {
 		fmt.Println("Error occurred: ", err.Error())
 	}
