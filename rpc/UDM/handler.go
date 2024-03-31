@@ -4,6 +4,8 @@ import (
 	"_5gAKA_go"
 	"context"
 	"fmt"
+	"io"
+	"log"
 	"os"
 	"time"
 )
@@ -26,8 +28,11 @@ func (s *ProtocolServiceImpl) Authenticate(ctx context.Context, data string) (re
 		}
 	}(file)
 
-	_, _ = file.WriteString(time.Now().Format("2006-01-02 15:04:05") + "  " + "Receive SUCI and SN_name from AUSF.")
-	fmt.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "Receive SUCI and SN_name from AUSF.")
+	// Set log output
+	multiWriter := io.MultiWriter(os.Stdout, file)
+	log.SetOutput(multiWriter)
+
+	log.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "Receive SUCI and SN_name from AUSF.")
 
 	SUCI, snName := data[:21], data[21:]
 	SUPI := GetSUPI(SUCI)
@@ -53,8 +58,7 @@ func (s *ProtocolServiceImpl) Authenticate(ctx context.Context, data string) (re
 
 	heAV := randNum + AUTN + xResStar + kAusf
 
-	fmt.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "Send 5G HE AV and SUPI to AUSF.")
-	_, _ = file.WriteString(time.Now().Format("2006-01-02 15:04:05") + "  " + "Send 5G HE AV and SUPI to AUSF.")
+	log.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "Send 5G HE AV and SUPI to AUSF.")
 
 	return heAV + SUPI, nil
 }

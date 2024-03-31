@@ -3,7 +3,6 @@ package main
 import (
 	seaf "_5gAKA_go/kitex_gen/_5gAKA_go/SEAF/protocolservice"
 	ue "_5gAKA_go/kitex_gen/_5gAKA_go/UE/protocolservice"
-	"fmt"
 	"github.com/cloudwego/kitex/client"
 	"github.com/cloudwego/kitex/server"
 	"log"
@@ -28,7 +27,7 @@ func main() {
 	}
 
 	// Second: run UE server
-	fmt.Println("UE:")
+	log.Println("UE:")
 
 	addr, _ := net.ResolveTCPAddr("tcp", host+":"+port)
 	svr := ue.NewServer(new(ProtocolServiceImpl), server.WithServiceAddr(addr))

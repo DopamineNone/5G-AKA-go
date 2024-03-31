@@ -2,7 +2,6 @@ package main
 
 import (
 	udm "_5gAKA_go/kitex_gen/_5gAKA_go/UDM/protocolservice"
-	"fmt"
 	"github.com/cloudwego/kitex/server"
 	"log"
 	"net"
@@ -14,7 +13,7 @@ var (
 )
 
 func main() {
-	fmt.Println("UDM:")
+	log.Println("UDM:")
 	addr, _ := net.ResolveTCPAddr("tcp", hostUDM+":"+portUDM)
 	svr := udm.NewServer(new(ProtocolServiceImpl), server.WithServiceAddr(addr))
 

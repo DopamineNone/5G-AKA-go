@@ -5,6 +5,8 @@ import (
 	seaf "_5gAKA_go/kitex_gen/_5gAKA_go/SEAF/protocolservice"
 	"context"
 	"fmt"
+	"io"
+	"log"
 	"os"
 	"time"
 )
@@ -12,8 +14,6 @@ import (
 var (
 	logPath    string = "../../log/UE.log"
 	seafClient seaf.Client
-	failMsg    string = "Authentication failed: Server error."
-	successMsg string = "Authentication was completed successfully!"
 )
 
 // ProtocolServiceImpl implements the last service interface defined in the IDL.
@@ -34,19 +34,22 @@ func (s *ProtocolServiceImpl) Authenticate(ctx context.Context) (resp string, er
 		}
 	}(file)
 
+	// Set log output
+	multiWriter := io.MultiWriter(os.Stdout, file)
+	log.SetOutput(multiWriter)
+
 	// Send SUPI and SN_Name to SEAF, get response, and update logs
 	SUPI := GenerateSUPI()
 	SUCI := GenerateSUCI(SUPI)
 	authReq, err := seafClient.Authenticate(context.Background(), SUCI+snName)
-	_, _ = file.WriteString(time.Now().Format("2006-01-02 15:04:05") + "  " + "Send SUCI and SN_name to SEAF.")
-	fmt.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "Send SUCI and SN_name to SEAF")
+	log.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "Send SUCI and SN_name to SEAF")
 	if err != nil {
-		fmt.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "Failed to receive reponse from SEAF")
-		return failMsg, err
+		log.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + err.Error())
+		return "", err
 	}
-	fmt.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "Receive auth-request from SEAF.")
-	_, _ = file.WriteString(time.Now().Format("2006-01-02 15:04:05") + "  " + "Receive auth-request from SEAF.")
+	log.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "Receive auth-request from SEAF.")
 
+	// Calculate *RES and check
 	randNum, AUTN := authReq[:32], authReq[32:]
 	sqnAK, amf, xMacA := ResolveAUTN(AUTN)
 
@@ -59,14 +62,13 @@ func (s *ProtocolServiceImpl) Authenticate(ctx context.Context) (resp string, er
 		L0 := fmt.Sprintf("%x", len(snName))
 		resStar := GenerateResStar(ck, ik, P0, L0, randNum, res)
 
-		_, err = seafClient.Authenticate(context.Background(), resStar)
-		fmt.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "Send res* to SEAF. Value:" + resStar)
-		_, _ = file.WriteString(time.Now().Format("2006-01-02 15:04:05") + "  " + "Send res* to SEAF. Value:" + resStar)
+		// Send auth-response to SEAF and update logs
+		_, err := seafClient.Authenticate(context.Background(), resStar)
+		log.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "Send res* to SEAF. Value:" + resStar)
 		if err != nil {
-			fmt.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "Failed to receive reponse from SEAF")
-			_, _ = file.WriteString(time.Now().Format("2006-01-02 15:04:05") + "  " + "Failed to receive reponse from SEAF")
-			return failMsg, err
+			log.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + err.Error())
+			return "", err
 		}
 	}
-	return successMsg, nil
+	return "Authentication passed successfully!", nil
 }

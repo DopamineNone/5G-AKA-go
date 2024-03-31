@@ -3,7 +3,6 @@ package main
 import (
 	ausf "_5gAKA_go/kitex_gen/_5gAKA_go/AUSF/protocolservice"
 	seaf "_5gAKA_go/kitex_gen/_5gAKA_go/SEAF/protocolservice"
-	"fmt"
 	"github.com/cloudwego/kitex/client"
 	"github.com/cloudwego/kitex/server"
 	"log"
@@ -27,7 +26,7 @@ func main() {
 		return
 	}
 
-	fmt.Println("SEAF:")
+	log.Println("SEAF:")
 	addr, _ := net.ResolveTCPAddr("tcp", hostSEAF+":"+portSEAF)
 	svr := seaf.NewServer(new(ProtocolServiceImpl), server.WithServiceAddr(addr))
 
