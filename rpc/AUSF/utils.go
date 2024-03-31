@@ -188,6 +188,5 @@ func handleConnection(conn net.Conn) {
 }
 
 func main() {
-	fmt.Println("AUSF:")
 	ReceiveData(portAUSF)
 }
