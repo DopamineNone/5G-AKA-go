@@ -5,8 +5,6 @@ import (
 	seaf "_5gAKA_go/kitex_gen/_5gAKA_go/SEAF/protocolservice"
 	"context"
 	"fmt"
-	"github.com/cloudwego/kitex/client"
-	"log"
 	"os"
 	"time"
 )
@@ -23,13 +21,6 @@ type ProtocolServiceImpl struct{}
 
 // Authenticate implements the ProtocolServiceImpl interface.
 func (s *ProtocolServiceImpl) Authenticate(ctx context.Context) (resp string, err error) {
-	seafClient, err = seaf.NewClient("_5gAKA_go.SEAF", client.WithHostPorts(seafHost+":"+seafPort))
-
-	if err != nil {
-		log.Println(err.Error())
-		return "", err
-	}
-
 	// Init Authentication
 	ki, op, snName, _ := InitForUE()
 	opc := _5gAKA_go.MilenageGenOpc(ki, op)

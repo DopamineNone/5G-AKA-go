@@ -9,13 +9,13 @@ import (
 )
 
 var (
-	host string = "localhost"
-	port string = "8004"
+	hostUDM string = "localhost"
+	portUDM string = "8004"
 )
 
 func main() {
 	fmt.Println("UDM:")
-	addr, _ := net.ResolveTCPAddr("tcp", host+":"+port)
+	addr, _ := net.ResolveTCPAddr("tcp", hostUDM+":"+portUDM)
 	svr := udm.NewServer(new(ProtocolServiceImpl), server.WithServiceAddr(addr))
 
 	err := svr.Run()

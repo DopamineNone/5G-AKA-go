@@ -4,8 +4,6 @@ import (
 	ausf "_5gAKA_go/kitex_gen/_5gAKA_go/AUSF/protocolservice"
 	"context"
 	"fmt"
-	"github.com/cloudwego/kitex/client"
-	"log"
 	"os"
 	"time"
 )
@@ -20,12 +18,6 @@ type ProtocolServiceImpl struct{}
 
 // Authenticate implements the ProtocolServiceImpl interface.
 func (s *ProtocolServiceImpl) Authenticate(ctx context.Context, data string) (resp string, err error) {
-	ausfClient, err = ausf.NewClient("_5gAKA_go.AUSF", client.WithHostPorts(ausfHost+":"+ausfPort))
-
-	if err != nil {
-		log.Println(err.Error())
-		return "", err
-	}
 
 	// Load log file
 	file, _ := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModePerm)
@@ -54,9 +46,8 @@ func (s *ProtocolServiceImpl) Authenticate(ctx context.Context, data string) (re
 
 		fmt.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "Receive 5G_SE_AV and SUPI from AUSF.")
 		_, _ = file.WriteString(time.Now().Format("2006-01-02 15:04:05") + "  " + "Receive 5G_SE_AV and SUPI from AUSF.")
-		_, AUTN, _, _ := ResolveAV(AV)
-		randNum, _, _, _ = ResolveAV(AV)
-		_, _, hxResStar, kSeaf = ResolveAV(AV)
+		var AUTN string
+		randNum, AUTN, hxResStar, _ = ResolveAV(AV)
 
 		fmt.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "Send rand_num and AUTN to UE.")
 		_, _ = file.WriteString(time.Now().Format("2006-01-02 15:04:05") + "  " + "Send rand_num and AUTN to UE.")

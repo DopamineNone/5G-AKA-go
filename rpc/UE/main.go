@@ -1,8 +1,10 @@
 package main
 
 import (
+	seaf "_5gAKA_go/kitex_gen/_5gAKA_go/SEAF/protocolservice"
 	ue "_5gAKA_go/kitex_gen/_5gAKA_go/UE/protocolservice"
 	"fmt"
+	"github.com/cloudwego/kitex/client"
 	"github.com/cloudwego/kitex/server"
 	"log"
 	"net"
@@ -16,12 +18,22 @@ var (
 )
 
 func main() {
+	// First: build connection with SEAF
+	var err error
+	seafClient, err = seaf.NewClient("_5gAKA_go.SEAF", client.WithHostPorts(seafHost+":"+seafPort))
+
+	if err != nil {
+		log.Println(err.Error())
+		return
+	}
+
+	// Second: run UE server
 	fmt.Println("UE:")
 
 	addr, _ := net.ResolveTCPAddr("tcp", host+":"+port)
 	svr := ue.NewServer(new(ProtocolServiceImpl), server.WithServiceAddr(addr))
 
-	err := svr.Run()
+	err = svr.Run()
 
 	if err != nil {
 		log.Println(err.Error())
