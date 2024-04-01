@@ -4,14 +4,11 @@ import (
 	ausf "_5gAKA_go/kitex_gen/_5gAKA_go/AUSF/protocolservice"
 	"context"
 	"fmt"
-	"io"
 	"log"
-	"os"
 	"time"
 )
 
 var (
-	logPath    string = "../../log/SEAF.log"
 	ausfClient ausf.Client
 )
 
@@ -20,19 +17,6 @@ type ProtocolServiceImpl struct{}
 
 // Authenticate implements the ProtocolServiceImpl interface.
 func (s *ProtocolServiceImpl) Authenticate(ctx context.Context, data string) (resp string, err error) {
-	// Load log file
-	file, _ := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModePerm)
-	defer func(file *os.File) {
-		err := file.Close()
-		if err != nil {
-			panic(err)
-		}
-	}(file)
-
-	// Set log output
-	multiWriter := io.MultiWriter(os.Stdout, file)
-	log.SetOutput(multiWriter)
-
 	// Judge data from UE: access-request or auth-response
 	length := len(data)
 	if length == 30 { // access-request
@@ -69,6 +53,7 @@ func (s *ProtocolServiceImpl) Authenticate(ctx context.Context, data string) (re
 				log.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + err.Error())
 				return "", err
 			}
+			log.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "Authentication Passed! Send Authentication Response to UE.")
 			return "Authentication passed successfully!", nil
 		} else {
 			msg := "SEAF Authentication failed: Unable to pass access-auth-check"

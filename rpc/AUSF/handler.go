@@ -4,14 +4,11 @@ import (
 	udm "_5gAKA_go/kitex_gen/_5gAKA_go/UDM/protocolservice"
 	"context"
 	"fmt"
-	"io"
 	"log"
-	"os"
 	"time"
 )
 
 var (
-	logPath   string = "../../log/AUSF.log"
 	udmClient udm.Client
 )
 
@@ -21,18 +18,8 @@ type ProtocolServiceImpl struct{}
 // Authenticate implements the ProtocolServiceImpl interface.
 func (s *ProtocolServiceImpl) Authenticate(ctx context.Context, data string) (resp string, err error) {
 	// 根据消息长度做出不同反应
-	file, _ := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModePerm)
-	defer func(file *os.File) {
-		err := file.Close()
-		if err != nil {
-			panic(err)
-		}
-	}(file)
 
-	// Set log output
-	multiWriter := io.MultiWriter(os.Stdout, file)
-	log.SetOutput(multiWriter)
-
+	log.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "Receive SUCI and SN_name from SEAF.")
 	length := len(data)
 
 	if length == 30 {
@@ -43,7 +30,7 @@ func (s *ProtocolServiceImpl) Authenticate(ctx context.Context, data string) (re
 		L0 = fmt.Sprintf("%x", len(snName))
 
 		resp, err := udmClient.Authenticate(context.Background(), data)
-		log.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "Send SUCI nd SN_name to UDM.")
+		log.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "Send SUCI and SN_name to UDM.")
 		if err != nil {
 			log.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + err.Error())
 			return "", err
@@ -65,7 +52,7 @@ func (s *ProtocolServiceImpl) Authenticate(ctx context.Context, data string) (re
 		// 消息长度为32，则为SEAF发送来的Res*  {Res*---32}
 		// 将SEAF发送来的Res*和之前从UDM接收的hRes*进行比较，相同则说明认证成功。
 		if data == xResStar {
-			log.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "Send Authentication Response to SEAF.")
+			log.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "AUSF Authentication Passed! Send Authentication Response to SEAF.")
 			return "AUSF Authentication passed", nil
 		}
 	} else {

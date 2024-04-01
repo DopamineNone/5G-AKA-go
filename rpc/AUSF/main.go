@@ -5,8 +5,10 @@ import (
 	udm "_5gAKA_go/kitex_gen/_5gAKA_go/UDM/protocolservice"
 	"github.com/cloudwego/kitex/client"
 	"github.com/cloudwego/kitex/server"
+	"io"
 	"log"
 	"net"
+	"os"
 	"time"
 )
 
@@ -15,10 +17,22 @@ var (
 	port    string = "8003"
 	hostUDM string = "localhost"
 	portUDM string = "8004"
+	logPath string = "../../log/AUSF.log"
 )
 
 func main() {
-	// First: build connection with UDM
+	// Set global log output
+	file, _ := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModePerm)
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			panic(err)
+		}
+	}(file)
+	multiWriter := io.MultiWriter(os.Stdout, file)
+	log.SetOutput(multiWriter)
+
+	// Build connection with UDM
 	var err error
 	udmClient, err = udm.NewClient("_5gAKA_go.UDM", client.WithHostPorts(hostUDM+":"+portUDM))
 

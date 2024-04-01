@@ -5,14 +5,11 @@ import (
 	seaf "_5gAKA_go/kitex_gen/_5gAKA_go/SEAF/protocolservice"
 	"context"
 	"fmt"
-	"io"
 	"log"
-	"os"
 	"time"
 )
 
 var (
-	logPath    string = "../../log/UE.log"
 	seafClient seaf.Client
 )
 
@@ -24,19 +21,6 @@ func (s *ProtocolServiceImpl) Authenticate(ctx context.Context) (resp string, er
 	// Init Authentication
 	ki, op, snName, _ := InitForUE()
 	opc := _5gAKA_go.MilenageGenOpc(ki, op)
-
-	// Load log file
-	file, _ := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModePerm)
-	defer func(file *os.File) {
-		err := file.Close()
-		if err != nil {
-			panic(err)
-		}
-	}(file)
-
-	// Set log output
-	multiWriter := io.MultiWriter(os.Stdout, file)
-	log.SetOutput(multiWriter)
 
 	// Send SUPI and SN_Name to SEAF, get response, and update logs
 	SUPI := GenerateSUPI()
@@ -68,7 +52,11 @@ func (s *ProtocolServiceImpl) Authenticate(ctx context.Context) (resp string, er
 		if err != nil {
 			log.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + err.Error())
 			return "", err
+		} else {
+			// Authentication passed!
+			log.Println(time.Now().Format("2006-01-02 15:04:05") + "  " + "Authentication passed successfully!")
+			return "Authentication passed successfully!", nil
 		}
 	}
-	return "Authentication passed successfully!", nil
+	return "", fmt.Errorf("Authentication failed: Unable to pass auth-response")
 }

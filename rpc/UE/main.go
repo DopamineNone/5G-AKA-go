@@ -5,8 +5,10 @@ import (
 	ue "_5gAKA_go/kitex_gen/_5gAKA_go/UE/protocolservice"
 	"github.com/cloudwego/kitex/client"
 	"github.com/cloudwego/kitex/server"
+	"io"
 	"log"
 	"net"
+	"os"
 )
 
 var (
@@ -14,9 +16,23 @@ var (
 	port     string = "8001"
 	seafHost string = "localhost"
 	seafPort string = "8002"
+	logPath  string = "../../log/UE.log"
 )
 
 func main() {
+	// Load log file
+	file, _ := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModePerm)
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			panic(err)
+		}
+	}(file)
+
+	// Set log output
+	multiWriter := io.MultiWriter(os.Stdout, file)
+	log.SetOutput(multiWriter)
+
 	// First: build connection with SEAF
 	var err error
 	seafClient, err = seaf.NewClient("_5gAKA_go.SEAF", client.WithHostPorts(seafHost+":"+seafPort))
